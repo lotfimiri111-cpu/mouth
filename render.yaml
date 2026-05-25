@@ -1,9 +1,11 @@
 services:
   - type: web
-    name: mathkarati-v17
+    name: mathkarati-pro-v18
     env: python
-    buildCommand: bash build.sh
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 180 --keep-alive 5 --worker-class gthread
+    buildCommand: pip install -r requirements.txt && apt-get install -y libreoffice poppler-utils -q
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --preload
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 10000

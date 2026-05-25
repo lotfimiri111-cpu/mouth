@@ -1625,17 +1625,12 @@ async function generate(){
     }
     // ── base64 JSON response (يتجاوز مشكلة Render proxy مع binary streams) ──
     const json=await r.json();
-    if(!json.ok || !json.data) throw new Error(json.error||'استجابة غير صالحة من الخادم');
-    const isFallback = false; // v17: single unified engine, no fallbacks
-    // تحويل base64 → Blob → Object URL
-    const raw=atob(json.data);
-    const bytes=new Uint8Array(raw.length);
-    for(let i=0;i<raw.length;i++) bytes[i]=raw.charCodeAt(i);
-    const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
-    const url=URL.createObjectURL(blob);
-    setP(100,t('modal_ok'));await sl(300);
-    showOk(url,d.studentName,isFallback,json.filename);
+    if(!json.ok) throw new Error(json.error||'استجابة غير صالحة من الخادم');
+    // v18: redirect to preview page instead of direct download
+    setP(100,t('modal_ok'));await sl(400);
     localStorage.removeItem('mp_v4');
+    // Redirect to preview
+    window.location.href = json.preview_url;
   }catch(e){
     clearTimeout(_timeoutId);
     _progStop=true;
